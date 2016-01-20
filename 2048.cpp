@@ -87,6 +87,7 @@ static const float SCORE_SUM_WEIGHT = 11.0f;
 static const float SCORE_MERGES_WEIGHT = 700.0f;
 static const float SCORE_EMPTY_WEIGHT = 270.0f;
 
+
 void init_tables() {
     for (unsigned row = 0; row < 65536; ++row) {
         unsigned line[4] = {
@@ -134,6 +135,7 @@ void init_tables() {
             merges += 1 + counter;
         }
 
+       
         float monotonicity_left = 0;
         float monotonicity_right = 0;
         for (int i = 1; i < 4; ++i) {
@@ -150,6 +152,7 @@ void init_tables() {
             SCORE_MONOTONICITY_WEIGHT * std::min(monotonicity_left, monotonicity_right) -
             SCORE_SUM_WEIGHT * sum;
 
+        //printf("\n%d,%d,%d,%d",line[0],line[1],line[2],line[3]);
         // execute a move to the left
         for (int i = 0; i < 3; ++i) {
             int j;
@@ -399,8 +402,8 @@ float score_toplevel_move(board_t board, int move) {
     elapsed = (finish.tv_sec - start.tv_sec);
     elapsed += (finish.tv_usec - start.tv_usec) / 1000000.0;
 
-    printf("Move %d: result %f: eval'd %ld moves (%d cache hits, %d cache size) in %.2f seconds (maxdepth=%d)\n", move, res,
-        state.moves_evaled, state.cachehits, (int)state.trans_table.size(), elapsed, state.maxdepth);
+    //printf("Move %d: result %f: eval'd %ld moves (%d cache hits, %d cache size) in %.2f seconds (maxdepth=%d)\n", move, res,
+    //    state.moves_evaled, state.cachehits, (int)state.trans_table.size(), elapsed, state.maxdepth);
 
     return res;
 }
@@ -411,8 +414,8 @@ int find_best_move(board_t board) {
     float best = 0;
     int bestmove = -1;
 
-    print_board(board);
-    printf("Current scores: heur %.0f, actual %.0f\n", score_heur_board(board), score_board(board));
+    //print_board(board);
+    //printf("Current scores: heur %.0f, actual %.0f\n", score_heur_board(board), score_board(board));
 
     for(move=0; move<4; move++) {
         float res = score_toplevel_move(board, move);
@@ -523,7 +526,24 @@ void play_game(get_move_func_t get_move) {
     printf("\nGame over. Your score is %.0f. The highest rank you achieved was %d.\n", score_board(board) - scorepenalty, get_max_rank(board));
 }
 
-int main() {
+int main(int argc,char** argv) {
+    //UDLR
     init_tables();
-    play_game(find_best_move);
+    
+    //handling inputs
+  
+    std::string inputstr_upper = argv[1];
+    std::string inputstr_lower = argv[2];
+    board_t tester = 0xA521631242102110ULL; //11898900620558475536
+    tester = std::stoll(inputstr_upper)+(std::stoll(inputstr_lower)<<32);
+    //printf("%lu",tester);
+    //print_board(tester);
+  init_tables();
+    //print_board(execute_move_0(tester));
+      //print_board(execute_move_1(tester));
+      //print_board(execute_move_2(tester));
+      //print_board(execute_move_3(tester));
+    int move = find_best_move(tester);
+    printf("%d",move);
+    //play_game(find_best_move);
 }
